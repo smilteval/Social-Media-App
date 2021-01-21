@@ -26,7 +26,6 @@ export default function PostForm() {
   function createPostCallback() {
     createPost();
   }
-
   return (
     <>
       <Form onSubmit={onSubmit}>
@@ -37,20 +36,20 @@ export default function PostForm() {
             name="body"
             onChange={onChange}
             value={values.body}
-            //error={error ? true : false}
+            error={error ? true : false}
           />
           <Button type="submit" color="teal">
             Submit
           </Button>
         </Form.Field>
       </Form>
-      {/* {error && (
+      {error && (
         <div className="ui error message" style={{ marginBottom: 20 }}>
           <ul className="list">
             <li>{error.graphQLErrors[0].message}</li>
           </ul>
         </div>
-      )} */}
+      )}
     </>
   );
 }
