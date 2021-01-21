@@ -1,54 +1,57 @@
-const bcrypt = require("bcryptjs")
-const jwt = require("jsonwebtoken")
-const {userInputError, UserInputError} = require("apollo-server")
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { UserInputError } = require("apollo-server");
 
-const {SECRET_KEY} = require("../../config")
-const User = require("../../models/User")
+const { validateRegisterInput } = require("../../util/validators");
+const { SECRET_KEY } = require("../../config");
+const User = require("../../models/User");
 
 module.exports = {
-    Mutation:{
-        async register(_, 
-            {
-                registerInput: {username, email, password, confirmPassword}
-            },
-        ) {
-            //Validate user data
-            
-            //Make sure user doesn't already exist
-            
-            const user = await User.findOne({username});
-            if(user){
-                throw new UserInputError("username is taken", {
-                    errors:{
-                        username: "This username is taken"
-                    }
-                })
-            }
+  Mutation: {
+    async register(
+      _,
+      { registerInput: { username, email, password, confirmPassword } }
+    ) {
+      //Validate user data
 
-            //hash password
-            //create auth token
-            password = await bcrypt.hash(password, 12);
+      //Make sure user doesn't already exist
+      const user = await User.findOne({ username });
+      if (user) {
+        throw new UserInputError("username is taken", {
+          errors: {
+            username: "This username is taken",
+          },
+        });
+      }
 
-            const newUser = new User({
-                email,
-                username,
-                password,
-                createdAt: new Date().toISOString()
-            })
+      //hash password
+      //create auth token
+      password = await bcrypt.hash(password, 12);
 
-            const res = await newUser.save();
+      const newUser = new User({
+        email,
+        username,
+        password,
+        createdAt: new Date().toISOString(),
+      });
 
-            const token = jwt.sign({
-                id: res.id,
-                email: res.email,
-                username: res.username
-            }, SECRET_KEY, {expiresIn: "1h"})
+      const res = await newUser.save();
 
-            return{
-                ...res._doc,
-                id: res._id,
-                token
-            }
-        }
-    }
-}
+      const token = jwt.sign(
+        {
+          id: res.id,
+          email: res.email,
+          username: res.username,
+        },
+        SECRET_KEY,
+        { expiresIn: "1h" }
+      );
+
+      return {
+        ...res._doc,
+        id: res._id,
+        token,
+      };
+    },
+  },
+};
