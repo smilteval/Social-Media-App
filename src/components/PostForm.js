@@ -18,7 +18,10 @@ export default function PostForm() {
         query: FETCH_POSTS_QUERY,
       });
       data.getPosts = [result.data.createPost, ...data.getPosts];
-      proxy.writeQuery({ query: FETCH_POSTS_QUERY, data });
+      proxy.writeQuery({
+        query: FETCH_POSTS_QUERY,
+        data: { getPosts: [result.data.createPost, ...data.getPosts] },
+      });
       values.body = "";
     },
   });
